@@ -31,6 +31,9 @@ from openpyxl.styles import PatternFill
 import base64
 from botocore.exceptions import ClientError
 
+PAGELOAD_TIMEOUT = 120
+
+
 # ============================ CONFIG / ENV LOADER ============================
 # Load local env overrides first (gitignored, optional)
 # If you don't use .env.local this is harmless.
@@ -304,8 +307,12 @@ def create_driver():
         except Exception as e:
             raise RuntimeError(f"Failed to start Chrome on AMD64: {e}")
 
+    driver.set_page_load_timeout(PAGELOAD_TIMEOUT)
     wait = WebDriverWait(driver, TIMEOUT)
     return driver, wait
+    
+    
+
 
 
 def on_keycloak() -> bool:
@@ -377,7 +384,11 @@ def open_with_sso(url: str,
             driver.delete_all_cookies()
         except Exception:
             pass
-    driver.get(url)
+    try:
+        driver.get(url)
+    except Exception:
+        print(f"Page load timeout for {url}")
+
     time.sleep(2)
     if on_keycloak():
         print(f"Keycloak detected — logging in for {url} …")
@@ -411,7 +422,12 @@ def login_console():
         print("LOGIN_URL not set — skipping initial console login (will SSO per-page).")
         return
     print("Opening login page…", LOGIN_URL)
-    driver.get(LOGIN_URL)
+
+    try:
+        driver.get(LOGIN_URL)
+    except Exception:
+        print(f"Page load timeout for {LOGIN_URL}")
+
     time.sleep(2)
     if on_keycloak():
         print("Logging in to console via Keycloak…")
@@ -776,6 +792,10 @@ def run_one_check(check: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, str]:
       (optional) login_url, login_username, login_password
     }
     """
+    start_time = time.time()
+    MAX_CHECK_TIME = 180 
+    
+    
     url = check["url"]
     name = check["name"]
     ctype = (check.get("type") or "value_required").lower()
@@ -855,7 +875,7 @@ def run_one_check(check: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, str]:
 
     # Let SPA render something
     try:
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 30).until(
             lambda d: len(d.find_elements(By.CSS_SELECTOR,
                     "em.value, .value, .num, .number, .count, .am5-layer")) > 0
         )
@@ -908,7 +928,7 @@ def run_one_check(check: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, str]:
             cond = EC.visibility_of_element_located(
                 (By.XPATH, value) if kind == "xpath" else (By.CSS_SELECTOR, value)
             )
-            elem = WebDriverWait(driver, 10).until(cond)
+            elem = WebDriverWait(driver, 30).until(cond)
             matched = f"{kind}:{value}"
             break
         except TimeoutException:
@@ -959,7 +979,15 @@ def run_one_check(check: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, str]:
         slack_notify(name, reason, screenshot_full)
 
     print(f"Result: {res['Status']} | Value: {res['Value']}")
+    
+    if time.time() - start_time > MAX_CHECK_TIME:
+        print(f"{name}: HARD TIMEOUT (>{MAX_CHECK_TIME}s)")
+        return make_result(meta, url, name, "", "", "FAIL")
+    
     return res
+    
+
+
 
 
 # ============================ MAIN ============================
