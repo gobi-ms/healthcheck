@@ -210,6 +210,33 @@ def dump_json(name: str, obj: Any) -> str:
         print("JSON dump failed:", e)
     return path
 
+def upload_report_to_s3(local_path: str) -> bool:
+    """
+    Upload the generated Excel report to S3, if REPORT_S3_BUCKET is set.
+    Returns True if upload succeeded and we can safely delete the local file.
+    """
+    bucket = os.getenv("REPORT_S3_BUCKET", "").strip()
+    if not bucket:
+        # S3 upload disabled if bucket not configured
+        print("REPORT_S3_BUCKET not set – skipping S3 upload.")
+        return False
+
+    prefix = os.getenv("REPORT_S3_PREFIX", "").strip().strip("/")
+    file_name = os.path.basename(local_path)
+    key = file_name if not prefix else f"{prefix}/{file_name}"
+
+    try:
+        import boto3
+        s3 = boto3.client("s3")
+        s3.upload_file(local_path, bucket, key)
+        print(f"Uploaded report to s3://{bucket}/{key}")
+        return True
+    except Exception as e:
+        print(f"Failed to upload report to S3: {e}")
+        return False
+
+
+
 
 # ============================ SLACK HELPERS ============================
 
@@ -656,6 +683,18 @@ def save_report(rows: List[Dict[str, str]]) -> str:
 
     wb.save(out)
     print(f"\nReport saved: {out}")
+
+    # Upload to S3 (if configured)
+    uploaded = upload_report_to_s3(out)
+
+    # If upload succeeded, delete the local file
+    if uploaded:
+        try:
+            os.remove(out)
+            print(f"Deleted local report file after upload: {out}")
+        except Exception as e:
+            print(f"Warning: could not delete local report {out}: {e}")
+
     return out
 
 
@@ -1050,5 +1089,6 @@ if __name__ == "__main__":
                 shutil.rmtree(TEMP_PROFILE_DIR, ignore_errors=True)
         except Exception:
             pass
+
 
 
