@@ -26,7 +26,11 @@ COPY global_config.yaml ./src/global/global_config.yaml
 ENV AWS_REGION=ap-northeast-2 \
     AWS_DEFAULT_REGION=ap-northeast-2 \
     USE_SECRETS_MANAGER=true \
-    SECRET_NAME=arn:aws:secretsmanager:ap-northeast-2:702147360356:secret:qobs/healthcheck-fwN15E
+    SECRET_NAME=arn:aws:secretsmanager:ap-northeast-2:702147360356:secret:qobs/healthcheck-fwN15E \
+    REPORT_S3_BUCKET=qobs-an2p-health-check-s3 \
+    REPORT_S3_PREFIX=reports
+
 
 # Run the script
 CMD ["python", "global_monitor.py"]
+
