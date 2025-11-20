@@ -181,7 +181,15 @@ def snap(name: str) -> str:
             print(f"Driver not initialized; created placeholder screenshot: {path}")
     except Exception as e:
         print("Screenshot save failed:", e)
+
+    # NEW: upload screenshot to S3 under SCREENSHOT_S3_PREFIX
+    try:
+        upload_to_s3(path, "SCREENSHOT_S3_PREFIX", "screenshots")
+    except Exception as e:
+        print(f"Screenshot S3 upload failed for {path}: {e}")
+
     return path
+
 
 def dump_html(name: str) -> str:
     ensure_dirs()
@@ -682,18 +690,17 @@ def save_report(rows: List[Dict[str, str]]) -> str:
                 cell.fill = red
 
     wb.save(out)
-    print(f"\nReport saved: {out}")
+    print(f"\nReport saved locally: {out}")
 
-    # Upload to S3 (if configured)
-    uploaded = upload_report_to_s3(out)
+    # Upload to S3 under REPORT_S3_PREFIX (e.g. reports/)
+    upload_to_s3(out, "REPORT_S3_PREFIX", "reports")
 
-    # If upload succeeded, delete the local file
-    if uploaded:
-        try:
-            os.remove(out)
-            print(f"Deleted local report file after upload: {out}")
-        except Exception as e:
-            print(f"Warning: could not delete local report {out}: {e}")
+    # If you truly want *only* S3 for reports, delete local file:
+    try:
+        os.remove(out)
+        print(f"Local report deleted: {out}")
+    except Exception as e:
+        print(f"Could not delete local report {out}: {e}")
 
     return out
 
@@ -1089,6 +1096,7 @@ if __name__ == "__main__":
                 shutil.rmtree(TEMP_PROFILE_DIR, ignore_errors=True)
         except Exception:
             pass
+
 
 
 
