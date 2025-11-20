@@ -122,8 +122,8 @@ def env_bool(name: str, default=False) -> bool:
     return v in ("1", "true", "yes", "y", "on")
 
 LOGIN_URL         = os.getenv("LOGIN_URL", "https://console.opsnow.com/home")
-OPSNOW_USERNAME    = os.getenv("OPSNOW_USERNAME", "alertnow-sresupport@clouddestinations.com")
-OPSNOW_PASSWORD    = os.getenv("OPSNOW_PASSWORD", "wyKlSZ4fo5Wknah##")
+OPSNOW_USERNAME    = os.getenv("OPSNOW_USERNAME", "")
+OPSNOW_PASSWORD    = os.getenv("OPSNOW_PASSWORD", "")
 XERTICA_USERNAME   = os.getenv("XERTICA_USERNAME", "")
 XERTICA_PASSWORD   = os.getenv("XERTICA_PASSWORD", "")
 
@@ -2229,3 +2229,4 @@ if __name__ == "__main__":
                 shutil.rmtree(TEMP_PROFILE_DIR, ignore_errors=True)
         except Exception:
             pass
+
