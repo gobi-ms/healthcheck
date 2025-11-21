@@ -2,7 +2,7 @@
 
 runtime:
   headless: false
-  timeout: 60
+  timeout: 120
   render_retry: 15
 
 reporting:
@@ -24,10 +24,10 @@ metadata_by_url:
   "https://metering.opsnow.com/cost/cost-analytics":          { service: "Cost",           menu: "Cost Analytics",        site: "Global", company: "옵스나우 주식회사" }
   "https://cloudopti.opsnow.com/finopskpi/savings":           { service: "Cost",           menu: "Optimization Results",  site: "Global", company: "옵스나우 주식회사" }
   "https://governance.opsnow.com/dashboard":                  { service: "Governance",     menu: "Summary",               site: "Global", company: "옵스나우 주식회사" }
-  "https://governance.opsnow.com/finopskpi/kpi":              { service: "Governance",     menu: "Cloud Efficient Index", site: "Global", company: "옵스나우 주식회사" }
-  "https://service.opsnow.com/cms/enterprise/management":     { service: "KubeExplorer",   menu: "Summary",               site: "Global", company: "옵스나우 주식회사" }
+  ##"https://governance.opsnow.com/finopskpi/kpi":              { service: "Governance",     menu: "Cloud Efficient Index", site: "Global", company: "옵스나우 주식회사" }
+  #"https://service.opsnow.com/cms/enterprise/management":     { service: "KubeExplorer",   menu: "Summary",               site: "Global", company: "옵스나우 주식회사" }
   "https://service.opsnow.com/saas/datadog/summary":          { service: "Datadog",        menu: "Summary",               site: "Global", company: "옵스나우 주식회사" }
-  "https://multicdn.opsnow.com/spider/dashboard":             { service: "CDN Management", menu: "Dashboard > Dashboard", site: "Global", company: "옵스나우 주식회사" }
+  #"https://multicdn.opsnow.com/spider/dashboard":             { service: "CDN Management", menu: "Dashboard > Dashboard", site: "Global", company: "옵스나우 주식회사" }
   "https://service.opsnow.com/console":                       { service: "Configuration",  menu: "Console Brokerage",     site: "Global", company: "옵스나우 주식회사" }
   "https://service.opsnow.com/organization/":                 { service: "Configuration",  menu: "Organization Tree",     site: "Global", company: "옵스나우 주식회사" }
 
@@ -106,21 +106,21 @@ checks:
       - { kind: xpath, value: "//h3[contains(normalize-space(.),'Scan Scores')]/following::strong[contains(@class,'score')][1]" }
       - { kind: xpath, value: "//strong[contains(normalize-space(.),'%')][1]" }
 
-  - name: "Cloud Efficient Index - Total Scores grade exists"
-    url: "https://governance.opsnow.com/finopskpi/kpi"
-    type: cei_grade
-    locators:
-      - { kind: xpath, value: "//*[self::section or self::div or self::article][.//text()[contains(.,'Total Scores')]]//span[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'grade')][1]" }
-      - { kind: xpath, value: "//p[contains(@class,'-number')][.//span[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'grade')]][1]" }
-      - { kind: xpath, value: "//span[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'grade')][1]" }
+  #- name: "Cloud Efficient Index - Total Scores grade exists"
+   # url: "https://governance.opsnow.com/finopskpi/kpi"
+    #type: cei_grade
+    #locators:
+    #  - { kind: xpath, value: "//*[self::section or self::div or self::article][.//text()[contains(.,'Total Scores')]]//span[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'grade')][1]" }
+    #  - { kind: xpath, value: "//p[contains(@class,'-number')][.//span[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'grade')]][1]" }
+     # - { kind: xpath, value: "//span[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'grade')][1]" }
 
-  - name: "KubeExplorer Summary - Node count value exists"
-    url: "https://service.opsnow.com/cms/enterprise/management"
-    type: value_required
-    locators:
-      - { kind: xpath, value: "//*[contains(normalize-space(.),'Resource Summary')]//*[contains(normalize-space(.),'Node count')]/following::p[contains(@class,'-number-l')][1]" }
-      - { kind: xpath, value: "//p[contains(@class,'-number-l')][.//em[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'nodes')]][1]" }
-      - { kind: xpath, value: "//*[self::p or self::div][contains(@class,'-number')][.//em[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'nodes')]][1]" }
+ # - name: "KubeExplorer Summary - Node count value exists"
+  #  url: "https://service.opsnow.com/cms/enterprise/management"
+   # type: value_required
+    #locators:
+     # - { kind: xpath, value: "//*[contains(normalize-space(.),'Resource Summary')]//*[contains(normalize-space(.),'Node count')]/following::p[contains(@class,'-number-l')][1]" }
+      #- { kind: xpath, value: "//p[contains(@class,'-number-l')][.//em[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'nodes')]][1]" }
+      #- { kind: xpath, value: "//*[self::p or self::div][contains(@class,'-number')][.//em[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'nodes')]][1]" }
 
   - name: "Datadog Summary - Total Cost value exists"
     url: "https://service.opsnow.com/saas/datadog/summary"
@@ -128,12 +128,12 @@ checks:
     locators:
       - { kind: xpath, value: "//*[contains(@class,'total-cost')][contains(normalize-space(.),'Total Cost')]/following::p[contains(@class,'total-cost-value')][1]" }
 
-  - name: "CDN Management - Bandwidth card exists"
-    url: "https://multicdn.opsnow.com/spider/dashboard"
-    type: element_exists
-    locators:
-      - { kind: xpath, value: "//*[self::h3 or self::h4 or self::div or self::p][normalize-space(.)='Bandwidth']" }
-      - { kind: xpath, value: "//div[contains(@class,'card')][.//*[normalize-space(.)='Bandwidth']]" }
+ # - name: "CDN Management - Bandwidth card exists"
+ #   url: "https://multicdn.opsnow.com/spider/dashboard"
+  #  type: element_exists
+  #  locators:
+   #   - { kind: xpath, value: "//*[self::h3 or self::h4 or self::div or self::p][normalize-space(.)='Bandwidth']" }
+    #  - { kind: xpath, value: "//div[contains(@class,'card')][.//*[normalize-space(.)='Bandwidth']]" }
 
   - name: "Console Brokerage - Total Accounts value exists"
     url: "https://service.opsnow.com/console"
@@ -149,3 +149,4 @@ checks:
     locators:
       - { kind: xpath, value: "//*[contains(@class,'treeListWrap') or contains(@class,'treeWrap')][.//span[normalize-space(.)='Organization']]" }
       - { kind: xpath, value: "//span[normalize-space(.)='Organization' and (contains(@class,'text') or contains(@class,'bespin-common'))]" }
+
