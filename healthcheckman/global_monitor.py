@@ -31,7 +31,7 @@ from openpyxl.styles import PatternFill
 import base64
 from botocore.exceptions import ClientError
 
-PAGELOAD_TIMEOUT = 120
+PAGELOAD_TIMEOUT = 180
 
 
 # ============================ CONFIG / ENV LOADER ============================
@@ -1159,3 +1159,4 @@ if __name__ == "__main__":
                 shutil.rmtree(TEMP_PROFILE_DIR, ignore_errors=True)
         except Exception:
             pass
+
